@@ -1,0 +1,9 @@
+policies:
+  - name: deregister-old-ami
+    resource: ami
+    filters:
+        - type: image-age
+          days: 30
+          op: ge
+    actions:
+        - deregister

@@ -1,0 +1,9 @@
+policies:
+  - name: delete-old-ebs-snapshots
+    resource: ebs-snapshot
+    filters:
+        - type: age
+          days: 30
+          op: ge
+    actions:
+        - delete

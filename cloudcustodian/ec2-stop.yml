@@ -1,0 +1,7 @@
+policies:
+  - name: ec2-stop-policy
+    resource: aws.ec2
+    filters:
+      - "tag:owner": present
+    actions:
+      - stop
