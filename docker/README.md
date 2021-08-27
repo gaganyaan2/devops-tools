@@ -1,10 +1,7 @@
-## Docker-compose
+## Docker
+
+### docker build
 
 ```
-#start
-docker-compose -f grafana-compose.yml up -d
-
-#stop
-docker-compose -f grafana-compose.yml down
-
+docker build -t image_name -f Dockerfile .
 ```
