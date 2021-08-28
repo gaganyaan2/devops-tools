@@ -11,3 +11,18 @@ apt-get install libgpiod2
 * * * * * /opt/cron/get_temp_dht11.sh
 
 ```
+
+### dht11 sensor with docker
+
+```
+docker build -t temp -f dht11.Dockerfile .
+
+docker run -it --privileged  temp python temp.py
+
+```
+
+
+## Refrences:
+
+1. https://www.raspberrypi.org/forums/viewtopic.php?t=235179
+2. https://stackoverflow.com/questions/30059784/docker-access-to-raspberry-pi-gpio-pins
