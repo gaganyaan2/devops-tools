@@ -17,7 +17,7 @@ apt-get install libgpiod2
 ```
 docker build -t temp -f dht11.Dockerfile .
 
-docker run -it --privileged  temp python temp.py
+docker run -it --privileged  temp python get_temp_dht11.py
 
 ```
 
