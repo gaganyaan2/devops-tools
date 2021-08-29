@@ -7,4 +7,4 @@ humidity=$(echo $t_and_h | awk -F ',' '{print $2}')
 
 unixtime=$(date +%s)
 
-docker run -it tbot python twitterBot.py "Mumbai, temperature=$temprerature C, humidity=$humidity% - by pibot with dht11 sensor at $unixtime #raspberrypi"
+docker run -it --rm tbot python twitterBot.py "Mumbai, temperature=$temprerature C, humidity=$humidity% - by pibot with dht11 sensor at $unixtime #raspberrypi"
