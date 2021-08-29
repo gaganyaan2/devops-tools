@@ -5,9 +5,9 @@
 ```
 #update secret and access key in twitterBot.py
 
-docker build -t twitterBot -f twitterBot.Dockerfile .
+docker build -t tbot -f twitterBot.Dockerfile .
 
-docker run -it twitterBot python twitterBot.py "Hola Twitter"
+docker run -it tbot python twitterBot.py "Hola Twitter"
 
 ```
 
