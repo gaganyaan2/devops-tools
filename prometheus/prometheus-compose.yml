@@ -1,0 +1,19 @@
+version: '3'
+services:
+  prometheus:
+    image: prom/prometheus:v2.29.2
+    volumes:
+      - type: bind
+        source: ${PWD}/prometheus.yml
+        target: /etc/prometheus/prometheus.yml
+    ports:
+      - 9090:9090
+
+  nginx:
+    image: nginx
+    volumes:
+      - type: bind
+        source: ${PWD}/http_sd.json
+        target: /usr/share/nginx/html/http_sd.json
+    ports:
+      - 8000:80
