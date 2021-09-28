@@ -1,0 +1,38 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: prometheus-conf
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval:     30s
+      evaluation_interval: 30s
+    scrape_configs:
+    
+      - job_name: 'kubernetes-pods'
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+              - default
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_name]
+            action: keep
+            regex: 'prometheus.*'
+          - source_labels: [__meta_kubernetes_namespace]
+            action: replace
+            target_label: kubernetes_namespace
+          - source_labels: [__meta_kubernetes_pod_name]
+            action: replace
+            target_label: kubernetes_pod_name
+          - source_labels: [__meta_kubernetes_pod_ip]
+            action: replace
+            target_label: kubernetes_pod_ip
+          - source_labels: [__meta_kubernetes_pod_container_name]
+            action: replace
+            target_label: kubernetes_container_name
+            
+        metric_relabel_configs:
+          - source_labels: [__name__]
+            action: keep
+            regex: (net_conntrack_dialer_conn_attempted_total|net_conntrack_dialer_conn_failed_total|prometheus_tsdb_tombstone_cleanup_seconds_bucket)
