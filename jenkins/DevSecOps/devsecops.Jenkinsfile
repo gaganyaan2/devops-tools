@@ -6,6 +6,12 @@ pipeline
     agent {
         label 'lp-worker-1'
     }
+    
+    options{
+        timestamps()
+        timeout(time: 30, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+    }
     environment {
     scannerHome = tool 'sonarqube'
     }
