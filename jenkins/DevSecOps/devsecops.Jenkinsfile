@@ -91,6 +91,8 @@ pipeline
                 echo "dependency-check"
                 #/dependency-check.sh --out /tmp --scan /home/home/Downloads/jar_file
                 #OR oss scan
+                #OR using grype
+                docker run -t -v $(PWD):/output registry.gitlab.com/security-products/container-scanning/grype:4 grype dir:/output
                 '''
             }
         }
@@ -121,6 +123,7 @@ pipeline
             sh '''
             echo "docker scan"
             #grype imagename -o json
+            docker run -it registry.gitlab.com/security-products/container-scanning/grype:4 grype <imagename>
             '''
             }
         }
@@ -171,14 +174,27 @@ pipeline
             '''
             }
         }
-        
+        stage('smoke-test')
+        {
+            steps
+            {
+                sh '''
+                status_code=$(curl -sL -w "%{http_code}\\n" "http://<endpoint>" -o /dev/null)
+                if [[ "$status_code" != "200" ]]
+                then
+                    echo "$endpoint status code is : $status_code"
+                    exit 1
+                fi
+                '''
+            }
+        }
         stage('api-testing')
         {
             steps
             {
                 sh '''
                 echo "api-test"
-            '''
+                '''
             }
         }
         stage('DAST')
@@ -187,7 +203,7 @@ pipeline
             {
                 sh '''
                 echo "dast"
-            '''
+                '''
             }
         }
     }
