@@ -9,9 +9,10 @@
 5. grype - Container, Language scanner - https://github.com/anchore/grype
 6. trivy - Container scanner - https://github.com/aquasecurity/trivy
 7. Clair - Container scanner - https://github.com/quay/clair , https://github.com/arminc/clair-scanner
-8. kube-bench - Kubernetes CIS scanner - https://github.com/aquasecurity/kube-bench
-9. kubehunter - Security weaknesses -  https://github.com/aquasecurity/kube-hunter
-10. popeye - https://github.com/derailed/popeye
-11. zap - https://www.zaproxy.org
-12. Clamav - Antivirus scan - https://www.clamav.net
-13. Nmap - Network open port scanner - https://nmap.org/
+8. Distroless image - https://github.com/GoogleContainerTools/distroless
+9. kube-bench - Kubernetes CIS scanner - https://github.com/aquasecurity/kube-bench
+10. kubehunter - Security weaknesses -  https://github.com/aquasecurity/kube-hunter
+11. popeye - https://github.com/derailed/popeye
+12. zap - https://www.zaproxy.org
+13. Clamav - Antivirus scan - https://www.clamav.net
+14. Nmap - Network open port scanner - https://nmap.org/
