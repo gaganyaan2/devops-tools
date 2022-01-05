@@ -4,7 +4,7 @@ provider "aws" {
 
 resource "aws_key_pair" "ap-web-01" {
   key_name   = "ap-web-01"
-  public_key = "YOUR_SSH_PUB_KEY"
+  public_key = file("/root/.ssh/id_rsa.pub")
 }
 
 resource "aws_instance" "ap-web-01" {

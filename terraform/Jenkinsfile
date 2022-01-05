@@ -1,0 +1,68 @@
+def git_url = 'https://github.com/koolwithk/devops-tools.git'
+def git_branch = 'main'
+
+pipeline
+{
+    agent {
+        label 'lp-kcontrol-1'
+    }
+    stages
+    {
+        stage('Git-checkout')
+        {
+            steps
+            {
+                git credentialsId: 'github', url: git_url , branch: git_branch
+            }
+        }
+        stage('terraform-init')
+        {
+            steps
+            {
+                sh '''
+                cd terraform
+                terraform init
+                '''
+            }
+        }
+        stage('terraform-validate')
+        {
+            steps
+            {
+                sh '''
+                cd terraform
+                terraform validate
+                '''
+            }
+        }
+        stage('terraform-plan')
+        {
+            steps
+            {
+                sh '''
+                cd terraform
+                terraform plan
+                '''
+            }
+        }
+        stage('terraform-approval')
+        {
+            steps
+            {
+                script{
+                    def userInput = input(id: 'confirm', message: 'apply terraform?', parameters: [ [$class: 'BooleanParameterDefinition', defaultValue: false, description: 'apply terraform', name: 'confirm'] ])
+                }
+            }
+        }
+        stage('terraform-apply')
+        {
+            steps
+            {
+                sh '''
+                cd terraform
+                terraform apply -auto-approve
+                '''
+            }
+        }
+    }
+}
