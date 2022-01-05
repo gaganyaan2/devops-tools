@@ -6,6 +6,10 @@ pipeline
     agent {
         label 'lp-kcontrol-1'
     }
+    parameters {
+                booleanParam(name: 'create_resources',defaultValue: true, description: 'Create resources' )
+                booleanParam(name: 'destroy_resources',defaultValue: false, description: 'Destroy resources' )
+    }
     stages
     {
         stage('Git-checkout')
@@ -56,11 +60,33 @@ pipeline
         }
         stage('terraform-apply')
         {
+            when { 
+                    expression 
+                    { 
+                        params.create_resources == true 
+                    } 
+            }
             steps
             {
                 sh '''
                 cd terraform
                 terraform apply -auto-approve
+                '''
+            }
+        }
+        stage('terraform-destroy')
+        {
+            when { 
+                    expression 
+                    { 
+                        params.destroy_resources == true 
+                    } 
+            }
+            steps
+            {
+                sh '''
+                cd terraform
+                terraform destroy -auto-approve
                 '''
             }
         }
