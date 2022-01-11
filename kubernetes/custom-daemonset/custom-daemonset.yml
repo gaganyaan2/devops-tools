@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    app: custom-daemonset
+  name: custom-daemonset
+spec:
+  selector:
+    matchLabels:
+      app: custom-daemonset
+  template:
+    metadata:
+      labels:
+        app: custom-daemonset
+    spec:
+      containers:
+      - command:
+        - /bin/bash
+        - -c
+        - |
+          echo "$STARTUP_SCRIPT" > /tmp/STARTUP_SCRIPT.sh
+          /bin/bash /tmp/STARTUP_SCRIPT.sh
+        env:
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: STARTUP_SCRIPT
+          value: |
+            #!/bin/bash
+            if [ $HOST_IP == "192.168.0.184" ]; then
+              echo "HOST_IP is $HOST_IP"
+            else
+              echo "HOST_IP does not match $HOST_IP"
+            fi
+            sleep 600
+        image: nginx
+        imagePullPolicy: IfNotPresent
+        name: custom-daemonset
