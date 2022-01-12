@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak-postgres
+  template:
+    metadata:
+      labels:
+        app: keycloak-postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:9.6
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: 100m
+          limits:
+            memory: 512Mi
+            cpu: 200m
+        env:
+        - name: POSTGRES_DB
+          value: keycloak_db
+        - name: POSTGRES_USER
+          value: keycloak_user
+        - name: POSTGRES_PASSWORD
+          value: postgres
+        volumeMounts:
+          - name: postgres-data-nfs
+            mountPath: /var/lib/postgresql/data
+        ports:
+        - containerPort: 5432
+      volumes:
+        - name: postgres-data-nfs
+          nfs:
+            server: 192.168.0.182
+            path: "/mnt/nfs1/keycloak-postgres"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak-postgres-svc
+spec:
+  selector:
+    app: keycloak-postgres
+  type: NodePort
+  ports:
+  - name: keycloak-postgres
+    port: 5432
+    targetPort: 5432
+    nodePort: 30020

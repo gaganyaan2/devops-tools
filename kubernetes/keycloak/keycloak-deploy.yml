@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+      - name: keycloak
+        image: quay.io/keycloak/keycloak
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: 100m
+          limits:
+            memory: 1024Mi
+            cpu: 500m
+        env:
+        - name: DB_VENDOR
+          value: POSTGRES
+        - name: DB_ADDR
+          value: keycloak-postgres-svc
+        - name: DB_DATABASE
+          value: keycloak_db
+        - name: DB_USER
+          value: keycloak_user
+        - name: DB_SCHEMA
+          value: public
+        - name: DB_PASSWORD
+          value: postgres
+        - name: KEYCLOAK_USER
+          value: admin
+        - name: KEYCLOAK_PASSWORD
+          value: admin
+        ports:
+        - containerPort: 8080
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak-svc
+spec:
+  selector:
+    app: keycloak
+  type: NodePort
+  ports:
+  - name: keycloak-svc
+    port: 8080
+    targetPort: 8080
+    nodePort: 30021
