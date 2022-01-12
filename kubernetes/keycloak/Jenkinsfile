@@ -16,7 +16,7 @@ pipeline{
                 #static analyisi of Deployment
                 docker run -t -v $(pwd):/output bridgecrew/checkov -f /output/keycloak-deploy.yml -o json |  jq '.' > k8deploy_result | exit 0
                 docker run -t -v $(pwd):/output bridgecrew/checkov -f /output/keycloak-postgres.yml -o json |  jq '.' >> k8deploy_result | exit 0
-                cat k8deploy_result
+                cat k8deploy_result | grep -B 4 'result'
                 '''
                 }
             }
@@ -27,8 +27,8 @@ pipeline{
                 sh '''
                 #use sed command to replace the creds or use k8 secret
 
-                kubectl apply -f keycloak-deploy.yml
-                kubectl apply -f keycloak-postgres.yml
+                kubectl apply -f keycloak-deploy.yml -n keycloak
+                kubectl apply -f keycloak-postgres.yml -n keycloak
                 '''
                 }
             }    
