@@ -30,7 +30,13 @@ pipeline
             cd jenkins/CICD/simple-rust-webserver
             sed -i "s/unique_image_tag/${image_tag}/g" k8-deployment.yml
             docker run -t -v $(pwd):/output bridgecrew/checkov -f /output/k8-deployment.yml -o json > k8deploy_result | exit 0
-            cat k8deploy_result
+            
+            if [ $(cat k8deploy_result | jq '.summary.failed') -gt 0 ]
+            then
+                echo "k8 deploy static analysis has been failed"
+                cat k8deploy_result | grep 'check_name'
+                exit 0
+            fi
             '''
             }
         }
@@ -39,7 +45,7 @@ pipeline
             steps{
             sh '''
             #kube bench for CIS scanning
-            docker run --pid=host -v /etc:/etc:ro -v /var:/var:ro -t aquasec/kube-bench:latest --version 1.23 | grep '\[FAIL\]'
+            docker run --pid=host -v /etc:/etc:ro -v /var:/var:ro -t aquasec/kube-bench:latest --version 1.23 | grep '\\[FAIL\\]'
             
             #kube hunter - Hunt for security weaknesses in Kubernetes clusters
             #kube-hunter --remote 192.168.0.183 --active > kube_hunter
@@ -58,7 +64,7 @@ pipeline
             -v /tmp:/tmp \
             quay.io/derailed/popeye -n default --save --output-file kube-popeye.txt | exit 0
             
-            cat /tmp/popeye/kube-popeye.txt
+            cat /tmp/popeye/kube-popeye.txt | exit 0
             '''
             }
         }
@@ -67,9 +73,10 @@ pipeline
             steps
             {
                 sh '''
-                kubectl delete -f the_httpd_deploy.yml && true
-                kubectl apply -f the_httpd_deploy.yml
-            '''
+                cd jenkins/CICD/simple-rust-webserver
+                kubectl delete -f k8-deployment.yml && true
+                kubectl apply -f k8-deployment.yml
+                '''
             }
         }
         stage('smoke-test')
