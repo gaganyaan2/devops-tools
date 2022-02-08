@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simple-rust-webserver
+spec:
+  selector:
+    matchLabels:
+      run: simple-rust-webserver
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: simple-rust-webserver
+    spec:
+      containers:
+      - name: simple-rust-webserver
+        image: koolwithk/simple-rust-webserver:unique_image_tag
+        ports:
+        - containerPort: 7878
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "100m"
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: simple-rust-webserver-svc
+  labels:
+    run: simple-rust-webserver-svc
+spec:
+  ports:
+    - protocol: TCP
+      port: 7878
+      targetPort: 7878
+      nodePort: 30080
+  selector:
+    run: simple-rust-webserver
+  type: NodePort
