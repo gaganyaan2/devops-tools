@@ -14,7 +14,7 @@ pipeline
         scannerHome = tool 'sonarqube'
     }
     parameters {
-        string( name: 'image_tag', defaultValue: '', trim: true )
+        string( name: 'image_tag', defaultValue: '', description: 'image tag eg. v1', trim: true )
     }
     stages
     {
@@ -95,7 +95,7 @@ pipeline
                 #OR oss scan
                 #OR using grype
                 cd jenkins/CICD/simple-rust-webserver
-                docker run -t -v $(PWD):/output registry.gitlab.com/security-products/container-scanning/grype:4 grype dir:/output
+                docker run -v $(pwd):/output registry.gitlab.com/security-products/container-scanning/grype:4 grype dir:/output
                 '''
             }
         }
@@ -103,15 +103,15 @@ pipeline
         {
             steps{
             sh '''
-            #static analyisi of Dockerfile
+            #static analysis of Dockerfile
             cd jenkins/CICD/simple-rust-webserver
-            docker run -t -v $(pwd):/output bridgecrew/checkov -f /output/Dockerfile -o json > docker_result | exit 0
+            docker run -v $(pwd):/output bridgecrew/checkov -f /output/Dockerfile -o json > docker_result | exit 0
             
             if [ $(cat docker_result | jq '.summary.failed') -gt 0 ]
             then
                 echo "docker static analysis has been failed"
                 cat docker_result | grep check_name 
-                exit 1
+                exit 0
             fi
             '''                
             }
@@ -121,7 +121,7 @@ pipeline
             steps{
             sh '''
             cd jenkins/CICD/simple-rust-webserver
-            docker build -t docker.com/koolwithk/simple-rust-webserver:${image_tag} .
+            docker build -t koolwithk/simple-rust-webserver:${image_tag} .
             '''
             }
         }
@@ -131,9 +131,9 @@ pipeline
             sh '''
             echo "docker scan"
             #grype imagename -o json
-            docker run -t registry.gitlab.com/security-products/container-scanning/grype:4 grype docker.com/koolwithk/simple-rust-webserver:${image_tag}  > docker_grype_result
-
-            if [ $(cat docker_result | grep -i 'severity'| egrep 'Critical|High' ) -gt 0 ]
+            #docker run registry.gitlab.com/security-products/container-scanning/grype:4 grype koolwithk/simple-rust-webserver:${image_tag}  > docker_grype_result
+            grype koolwithk/simple-rust-webserver:${image_tag}  > docker_grype_result
+            if [ $(cat docker_result | grep -i 'severity'| egrep 'Critical|High' | wc -l ) -gt 0 ]
             then
                 echo "docker image scan has been failed"
                 cat docker_grype_result | grep -A 1 '"id"'
@@ -146,7 +146,7 @@ pipeline
         {
             steps{
             sh '''
-            docker push docker.com/koolwithk/simple-rust-webserver:${image_tag}
+            docker push koolwithk/simple-rust-webserver:${image_tag}
             '''
             }
         }
