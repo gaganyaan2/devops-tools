@@ -3,6 +3,7 @@ WORKDIR /opt
 RUN rustup target add x86_64-unknown-linux-musl
 COPY . .
 RUN cargo build --target x86_64-unknown-linux-musl --release
+RUN strip /opt/target/x86_64-unknown-linux-musl/release/simple-rust-webserver
 
 FROM alpine:3.15.0
 WORKDIR /opt
