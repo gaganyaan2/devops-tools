@@ -26,15 +26,17 @@ pipeline
 
                         #argocd repo add https://github.com/koolwithk/devops-tools.git --username git --password secret
 
-                        argocd repo add ${git_url}
+                        #argocd repo add ${git_url}
 
-                        ARGOCD_SERVER=$ARGOCD_SERVER argocd app create keycloak --repo ${git_url} \
+                        ARGOCD_SERVER=$ARGOCD_SERVER argocd app create keycloak --repo https://github.com/koolwithk/devops-tools.git \
                         --path kubernetes/keycloak \
                         --dest-namespace default \
-                        --dest-server https://kubernetes.default.svc 
-                        --directory-recurse
+                        --dest-server https://kubernetes.default.svc \
+                        --directory-recurse \
+                        --sync-policy=auto \
+                        --grpc-web
 
-                        ARGOCD_SERVER=$ARGOCD_SERVER argocd --grpc-web app sync $APP_NAME --force
+                        ARGOCD_SERVER=$ARGOCD_SERVER argocd --grpc-web app sync keycloak --force
 
                         '''
                     }
