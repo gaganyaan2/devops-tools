@@ -21,7 +21,7 @@ pipeline
             steps
             {
                 dir("kubernetes/keycloak"){
-                    withCredentials([string(credentialsId: "argocd-jenkins-role", variable: 'ARGOCD_AUTH_TOKEN')]) {
+                    withCredentials([string(credentialsId: "argo-jenkins-role", variable: 'ARGOCD_AUTH_TOKEN')]) {
                         sh '''
 
                         #argocd repo add https://github.com/koolwithk/devops-tools.git --username git --password secret
