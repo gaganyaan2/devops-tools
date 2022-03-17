@@ -1,0 +1,44 @@
+def git_url = 'https://github.com/koolwithk/devops-tools.git'
+def git_branch = 'main'
+pipeline
+{
+    agent {
+        label 'lp-worker-1'
+    }
+    options{
+        timestamps()
+        timeout(time: 30, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+    }
+
+    parameters {
+        string( name: 'ARGOCD_SERVER', defaultValue: 'nginx-test', description: 'app_name eg. app1', trim: true )
+    }
+
+        stage('deploy')
+        {
+            steps
+            {
+                dir("kubernetes/keycloak"){
+                    withCredentials([string(credentialsId: "argocd-jenkins-role", variable: 'ARGOCD_AUTH_TOKEN')]) {
+                        sh '''
+
+                        #argocd repo add https://github.com/koolwithk/devops-tools.git --username git --password secret
+
+                        argocd repo add ${git_url}
+
+                        ARGOCD_SERVER=$ARGOCD_SERVER argocd app create keycloak --repo ${git_url} \
+                        --path kubernetes/keycloak \
+                        --dest-namespace default \
+                        --dest-server https://kubernetes.default.svc 
+                        --directory-recurse
+
+                        ARGOCD_SERVER=$ARGOCD_SERVER argocd --grpc-web app sync $APP_NAME --force
+
+                        '''
+                    }
+                }
+            }
+        }
+    }
+}
