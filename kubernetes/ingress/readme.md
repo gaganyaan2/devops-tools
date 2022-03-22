@@ -33,7 +33,7 @@ spec:
               number: 9090
 ```
 
-Note : ingress should be installed in same namespace where service(eg. prometheus-service) is located.
+#### Note : ingress should be installed in same namespace where service(eg. prometheus-service) is located.
 
 Refrences:
 - https://haproxy-ingress.github.io/docs/getting-started/
