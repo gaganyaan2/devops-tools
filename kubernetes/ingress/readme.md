@@ -12,6 +12,7 @@ helm install haproxy-ingress haproxy-ingress/haproxy-ingress\
 #### example-ingress.yaml
 
 ```yaml
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
