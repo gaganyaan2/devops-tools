@@ -87,3 +87,4 @@ curl -vvv --header 'Host: prometheus.example.com' 192.168.0.183:32520
 
 Refrences:
 - https://haproxy-ingress.github.io/docs/getting-started/
+- https://www.haproxy.com/blog/enable-tls-with-lets-encrypt-and-the-haproxy-kubernetes-ingress-controller/
