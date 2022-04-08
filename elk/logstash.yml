@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logstash-deployment
+  labels:
+    app: logstash
+    env: prod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logstash
+  template:
+    metadata:
+      name: logstash-deployment
+      labels:
+        app: logstash
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: "beta.kubernetes.io/arch"
+                operator: "In"
+                values:
+                - arm64
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: "kubernetes.io/hostname"
+                operator: "In"
+                values:
+                - lp-arm-2.home
+                - lp-arm-3.home
+      tolerations:
+      - key: "key"
+        operator: "Exists"
+        effect: "NoSchedule"
+      containers:
+      - name: logstash
+        image: logstash:7.13.1
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "100m"
+          limits:
+            memory: "2048Mi"
+            cpu: "1000m"
+        env:
+          - name: xpack.monitoring.elasticsearch.hosts
+            value: http://elasticsearch-service:9200
+        volumeMounts:
+          - name: logstash-nfs
+            mountPath: /usr/share/logstash/pipeline
+        ports:
+        - name: tcp-port
+          containerPort: 5044
+      volumes:
+        - name: logstash-nfs
+          nfs:
+            server: 192.168.0.182
+            path: "/mnt/nfs1/logstash/pipeline"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: logstash-service
+  labels:
+    app: logstash
+    env: prod
+spec:
+  selector:
+    app: logstash
+  type: NodePort
+  ports:
+  - name: logstash
+    port: 5044
+    targetPort: 5044
+    nodePort: 30006

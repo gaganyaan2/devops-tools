@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kibana-deployment
+  labels:
+    app: kibana
+    env: prod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kibana
+  template:
+    metadata:
+      name: kibana-deployment
+      labels:
+        app: kibana
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: "beta.kubernetes.io/arch"
+                operator: "In"
+                values:
+                - arm64
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: "kubernetes.io/hostname"
+                operator: "In"
+                values:
+                - lp-arm-2.home
+                - lp-arm-3.home
+                - lp-arm-4.home
+      tolerations:
+      - key: "key"
+        operator: "Exists"
+        effect: "NoSchedule"
+      containers:
+      - name: kibana
+        image: kibana:7.13.1
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "2048Mi"
+            cpu: "2000m"
+        env:
+          - name: ELASTICSEARCH_HOSTS
+            value: http://elasticsearch-service:9200
+        volumeMounts:
+          - name: kibana-nfs
+            mountPath: /usr/share/kibana/data
+        ports:
+        - name: tcp-port
+          containerPort: 5601
+      volumes:
+        - name: kibana-nfs
+          nfs:
+            server: 192.168.0.182
+            path: "/mnt/nfs1/kibana"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana-service
+  labels:
+    app: kibana
+    env: prod
+spec:
+  selector:
+    app: kibana
+  type: NodePort
+  ports:
+  - name: kibana
+    port: 5601
+    targetPort: 5601
+    nodePort: 30007

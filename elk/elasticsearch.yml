@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elasticsearch-deployment
+  labels:
+    app: elasticsearch
+    env: prod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      name: elasticsearch-deployment
+      labels:
+        app: elasticsearch
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: "beta.kubernetes.io/arch"
+                operator: "In"
+                values:
+                - arm64
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: "kubernetes.io/hostname"
+                operator: "In"
+                values:
+                - lp-arm-2.home
+                - lp-arm-3.home
+                - lp-arm-4.home
+      tolerations:
+      - key: "key"
+        operator: "Exists"
+        effect: "NoSchedule" 
+      containers:
+      - name: elasticsearch
+        image: elasticsearch:7.13.1
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "2048Mi"
+            cpu: "2000m"
+        env:
+          - name: discovery.type
+            value: single-node
+        volumeMounts:
+          - name: elasticsearch-nfs
+            mountPath: /usr/share/elasticsearch/data
+        ports:
+        - name: tcp-port
+          containerPort: 9200
+      volumes:
+        - name: elasticsearch-nfs
+          nfs:
+            server: 192.168.0.182
+            path: "/mnt/nfs1/elasticsearch"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch-service
+  labels:
+    app: elasticsearch
+    env: prod
+spec:
+  selector:
+    app: elasticsearch
+  type: NodePort
+  ports:
+  - name: elasticsearch
+    port: 9200
+    targetPort: 9200
+    nodePort: 30005

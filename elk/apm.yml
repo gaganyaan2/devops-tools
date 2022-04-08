@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apm-deployment
+  labels:
+    app: apm
+    env: prod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apm
+  template:
+    metadata:
+      name: apm-deployment
+      labels:
+        app: apm
+    spec:
+      containers:
+      - name: apm
+        image: elastic/apm-server:7.13.1
+        command: ["/usr/share/apm-server/apm-server"]
+        #args: [ "-e", "-E", "output.elasticsearch.hosts=['elasticsearch-service:9200']" ]
+        args: [ "-e", "-d", "*", "-E", "output.elasticsearch.hosts=['elasticsearch-service:9200']", "-E", "apm-server.rum.enabled='true'" ]
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "200m"
+          limits:
+            memory: "2048Mi"
+            cpu: "1000m"
+        env:
+          - name: output.elasticsearch.hosts
+            value: elasticsearch-service:9200
+        volumeMounts:
+          - name: apm-nfs
+            mountPath: /usr/share/apm/data/apm-server.yml
+            subPath: apm-server.yml
+        ports:
+        - name: tcp-port
+          containerPort: 8200
+      volumes:
+        - name: apm-nfs
+          nfs:
+            server: 192.168.0.182
+            path: "/mnt/nfs1/apm/"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apm-service
+  labels:
+    app: apm
+    env: prod
+spec:
+  selector:
+    app: apm
+  type: NodePort
+  ports:
+  - name: apm
+    port: 8200
+    targetPort: 8200
+    nodePort: 30022
