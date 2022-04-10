@@ -53,6 +53,8 @@ spec:
         env:
           - name: discovery.type
             value: single-node
+          # - name: xpack.security.enabled
+          #   value: "true"
         volumeMounts:
           - name: elasticsearch-nfs
             mountPath: /usr/share/elasticsearch/data
