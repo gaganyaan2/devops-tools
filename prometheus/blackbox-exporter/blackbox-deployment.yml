@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blackbox-deployment
+  labels:
+    app: blackbox
+    env: prod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blackbox
+      env: prod
+  template:
+    metadata:
+      labels:
+        app: blackbox
+        env: prod
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: "beta.kubernetes.io/arch"
+                operator: "In"
+                values:
+                - arm64
+      tolerations:
+      - key: "key"
+        operator: "Exists"
+        effect: "NoSchedule" 
+      containers:
+      - name: blackbox-container
+        image: prom/blackbox-exporter:v0.19.0
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        ports:
+        - containerPort: 9115
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: blackbox-service
+  labels:
+    app: blackbox
+    env: prod
+spec:
+  selector:
+    app: blackbox
+    env: prod
+  ports:
+  - name: promblackbox
+    protocol: TCP
+    port: 9115
+    targetPort: 9115
+  type: NodePort
