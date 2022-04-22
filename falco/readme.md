@@ -37,7 +37,7 @@ helm repo update
 helm install falco falcosecurity/falco
 
 #install with falcosidekick
-helm upgrade --install falco falcosecurity/falco --set falcosidekick.enabled=true
+helm upgrade --install falco falcosecurity/falco --set falcosidekick.enabled=true --set falcosidekick.webui.enabled=true
 ```
 
 Note: - Falco needs kernel headers installed on the host as a prerequisite
@@ -45,3 +45,4 @@ Note: - Falco needs kernel headers installed on the host as a prerequisite
 ### Refrences
 - https://falco.org/docs/getting-started/installation/
 - https://github.com/falcosecurity/charts/tree/master/falco
+- https://github.com/falcosecurity/charts/tree/master/falcosidekick
