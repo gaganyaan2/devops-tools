@@ -12,6 +12,10 @@ docker-compose -f prometheus-compose.yml down
 
 ```
 
+### Prometheus push-gateway
+
+https://github.com/koolwithk/pushgateway-k8.git
+
 Refrences:
 1. https://prometheus.io/docs/prometheus/latest/http_sd/
 2. https://prometheus.io/docs/prometheus/latest/configuration/configuration/#http_sd_config
