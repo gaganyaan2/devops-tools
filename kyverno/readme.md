@@ -38,3 +38,6 @@ EOF
 kubectl create deployment nginx --image=nginx
 
 ```
+
+### Refrences
+- https://kyverno.io/docs/introduction/#quick-start
