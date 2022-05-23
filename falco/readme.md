@@ -38,9 +38,19 @@ helm install falco falcosecurity/falco
 
 #install with falcosidekick
 helm upgrade --install falco falcosecurity/falco --set falcosidekick.enabled=true --set falcosidekick.webui.enabled=true
+
+#with elasticsearch
+helm upgrade --install falco falcosecurity/falco --set falcosidekick.enabled=true --set falcosidekick.webui.enabled=true  --set falcosidekick.config.elasticsearch.hostport=http://192.168.0.183:30005
 ```
 
 Note: - Falco needs kernel headers installed on the host as a prerequisite
+
+### falcosidekick - Connect Falco to your ecosystem(logs, alert, report)
+
+- https://github.com/falcosecurity/falcosidekick#outputs
+- https://github.com/falcosecurity/falcosidekick#env-vars # can pass as env
+- https://github.com/falcosecurity/charts/blob/master/falcosidekick/README.md#configuration # helm chart values
+- https://github.com/kubernetes-sigs/wg-policy-prototypes/tree/master/policy-report - kube-bench , kubearmor
 
 ### Refrences
 - https://falco.org/docs/getting-started/installation/
