@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-deployment
+  labels:
+    app: prometheus
+    env: prod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+      env: prod
+  template:
+    metadata:
+      labels:
+        app: prometheus
+        env: prod
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: "kubernetes.io/arch"
+                operator: "In"
+                values:
+                - arm64
+      tolerations:
+      - key: "key"
+        operator: "Exists"
+        effect: "NoSchedule" 
+      containers:
+      - name: prometheus-container
+        image: prom/prometheus
+        command: ["/bin/prometheus"]
+        args:
+          - '--config.file=/etc/prometheus/prometheus.yml'
+          - '--storage.tsdb.path=/prometheus'
+          - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+          - '--web.console.templates=/usr/share/prometheus/consoles'
+          - '--storage.tsdb.retention.time=90d'
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "200m"
+          limits:
+            memory: "1024Mi"
+            cpu: "500m"
+        volumeMounts:
+          - name: prometheus-conf
+            mountPath: /etc/prometheus/prometheus.yml
+            subPath: prometheus.yml
+          - name: prometheus-storage
+            mountPath: /prometheus
+        ports:
+        - containerPort: 9090
+      volumes:
+        - name: prometheus-conf
+          configMap:
+           name: prometheus-conf
+        - name: prometheus-storage
+          nfs:
+            server: 192.168.0.182
+            path: "/mnt/nfs1/prometheus"
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: prometheus-service
+  labels:
+    app: prometheus
+    env: prod
+spec:
+  selector:
+    app: prometheus
+    env: prod
+  ports:
+  - name: promui
+    protocol: TCP
+    port: 9090
+    targetPort: 9090
+    nodePort: 30003
+  type: NodePort
