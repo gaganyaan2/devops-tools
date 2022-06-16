@@ -1,0 +1,38 @@
+apiVersion: comcast.github.io/v1
+kind: KuberhealthyCheck
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: Helm
+  name: deployment
+  namespace: kuberhealthy
+spec:
+  podSpec:
+    containers:
+    - env:
+      - name: CHECK_DEPLOYMENT_REPLICAS
+        value: "4"
+      - name: CHECK_DEPLOYMENT_ROLLING_UPDATE
+        value: "true"
+      - name: CHECK_SERVICE_ACCOUNT
+        value: default
+      image: kuberhealthy/deployment-check:v1.9.0
+      imagePullPolicy: IfNotPresent
+      name: deployment
+      resources:
+        limits:
+          cpu: 40m
+        requests:
+          cpu: 25m
+          memory: 15Mi
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+    restartPolicy: Never
+    securityContext:
+      fsGroup: 999
+      runAsUser: 999
+    serviceAccountName: deployment-sa
+    terminationGracePeriodSeconds: 60
+  runInterval: 10m
+  timeout: 15m
