@@ -47,3 +47,4 @@ KH_POD_NAMESPACE: The namespace of the checker pod.
 ## Refrences:
 - https://kubernetes.io/blog/2020/05/29/k8s-kpis-with-kuberhealthy/
 - https://github.com/kuberhealthy/kuberhealthy/blob/master/docs/CHECK_CREATION.md
+- https://github.com/kuberhealthy/kuberhealthy/tree/master/deploy/helm/kuberhealthy
