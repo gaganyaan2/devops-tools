@@ -32,7 +32,7 @@ systemctl restart containerd
 
 ### run sandbox pod
 
-```bash
+```yaml
 cat <<EOF | kubectl apply -f -
 apiVersion: node.k8s.io/v1beta1
 kind: RuntimeClass
