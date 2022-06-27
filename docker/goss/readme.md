@@ -44,3 +44,4 @@ goss validate
 
 ### Refrences
 - https://github.com/aelsabbahy/goss
+- https://github.com/aelsabbahy/goss/blob/master/docs/manual.md#resource-types
