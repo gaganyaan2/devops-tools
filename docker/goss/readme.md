@@ -42,6 +42,19 @@ It will verify all rules from goss.yaml
 goss validate
 ```
 
+## dgoss for docker validation
+
+```bash
+# add test
+dgoss edit nginx
+
+goss add file /etc/passwd
+#once we exit it will copy the goss.yaml from container to current directory
+
+# validate
+dgoss run nginx
+
+```
 ### Refrences
 - https://github.com/aelsabbahy/goss
 - https://github.com/aelsabbahy/goss/blob/master/docs/manual.md#resource-types
