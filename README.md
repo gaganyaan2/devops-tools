@@ -1,10 +1,18 @@
-# devops-tools
+# Devops-tools
 
 DevOps Tools list 
 
-- Jenkins CICD 
-- Kubernetes
+### CICD
+- Jenkins
+- Gitlab
+- Github actions
+
+### Kubernetes
+
+### IAC
 - Terraform
+
+### Monitoring
 - Prometheus
 - Grafana
 - ELK
