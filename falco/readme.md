@@ -41,6 +41,9 @@ helm upgrade --install falco falcosecurity/falco --set falcosidekick.enabled=tru
 
 #with elasticsearch
 helm upgrade --install falco falcosecurity/falco --set falcosidekick.enabled=true --set falcosidekick.webui.enabled=true  --set falcosidekick.config.elasticsearch.hostport=http://192.168.0.183:30005
+
+#with tolerations
+helm upgrade --install falco falcosecurity/falco --set falcosidekick.enabled=true --set falcosidekick.webui.enabled=true --set falcosidekick.tolerations[0].effect=NoSchedule --set falcosidekick.tolerations[0].key=key
 ```
 
 Note: - Falco needs kernel headers installed on the host as a prerequisite
