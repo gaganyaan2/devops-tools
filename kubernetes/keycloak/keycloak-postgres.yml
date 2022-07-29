@@ -23,7 +23,8 @@ spec:
                 - arm64
       tolerations:
       - key: "key"
-        operator: "Exists"
+        operator: "Equal"
+        value: "arm"
         effect: "NoSchedule"
       containers:
       - name: postgres
