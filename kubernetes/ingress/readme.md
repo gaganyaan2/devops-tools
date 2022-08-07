@@ -85,6 +85,24 @@ spec:
 curl -vvv --header 'Host: prometheus.example.com' 192.168.0.183:32520
 ```
 
-Refrences:
+### Static IP for haproxy ingress controller in AWS
+- Need to have 3 Elastic IP this is genrally depends on how much subnet you have.
+- Edit haproxy-ingress service and add 3 `aws-load-balancer-eip-allocations` and `aws-load-balancer-type: nlb`
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: haproxy-ingress
+  annotations:
+    meta.helm.sh/release-name: haproxy-ingress
+    meta.helm.sh/release-namespace: ingress-controller
+    service.beta.kubernetes.io/aws-load-balancer-eip-allocations: eipalloc-1,eipalloc-2,eipalloc-3
+    service.beta.kubernetes.io/aws-load-balancer-subnets: subnet-1,subnet-2,subnet-3
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+```
+
+
+### Refrences:
 - https://haproxy-ingress.github.io/docs/getting-started/
 - https://www.haproxy.com/blog/enable-tls-with-lets-encrypt-and-the-haproxy-kubernetes-ingress-controller/
+- https://stackoverflow.com/questions/60095864/how-can-i-assign-a-static-ip-to-my-eks-service
