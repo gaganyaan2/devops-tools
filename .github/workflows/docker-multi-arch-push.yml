@@ -37,7 +37,7 @@ jobs:
           file: ./docker/multi-arch-docker-image-push/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: koolwithk/hola-haskell:"${GITHUB_SHA}"
+          tags: "${GITHUB_SHA}"
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
