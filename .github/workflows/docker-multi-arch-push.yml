@@ -1,0 +1,40 @@
+name: docker-multi-arch-push
+
+jobs:
+  docker-build-push:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to docker.io container registry
+        uses: docker/login-action@v2 
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      # - name: Docker tag meta
+      #   id: vars
+      #   shell: bash
+      #   run: |
+      #     echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      #     echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v3
+        with:
+          context: ./docker/multi-arch-docker-image-push/
+          file: ./docker/multi-arch-docker-image-push/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: koolwithk/hola-haskell:"${GITHUB_SHA}"
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
