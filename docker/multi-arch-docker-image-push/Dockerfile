@@ -1,6 +1,6 @@
 FROM haskell:8 AS build
 WORKDIR /opt
-RUN cabal update
+#RUN cabal update
 RUN cabal install --lib scotty
 COPY hola.hs .
 #RUN ghc --make -threaded hola.hs  -o hola
