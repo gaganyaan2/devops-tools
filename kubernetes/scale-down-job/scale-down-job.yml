@@ -1,0 +1,18 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: nginx-scale-down-job
+spec:
+  schedule: "* * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: scale-sa
+          containers:
+          - name: nginx-scale-down-job
+            image: koolwithk/kubectl
+            imagePullPolicy: IfNotPresent
+            command: ["/bin/sh"]
+            args: ["-c", "kubectl scale --replicas=1 deployment nginx-deploy"]
+          restartPolicy: OnFailure
