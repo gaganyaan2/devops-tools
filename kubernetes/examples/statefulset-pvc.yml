@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nginx-pvc
+spec:
+  selector:
+    matchLabels:
+      app: nginx-pvc
+  serviceName: "nginx-svc"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx-pvc
+    spec:
+      containers:
+      - name: nginx-pvc
+        image: nginx
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: /hostpath-mnt
+          name: hostpath-mnt
+        - name: nfs-mnt
+          mountPath: /nfs-mnt
+        - name: pvc-claim-mnt
+          mountPath: /pvc-claim-mnt
+      volumes:
+      - name: hostpath-mnt
+        hostPath:
+          path: /hostpath-mnt
+          type: DirectoryOrCreate
+      - name: pvc-claim-mnt
+        persistentVolumeClaim:
+          claimName: pvc-claim-1
+  volumeClaimTemplates:
+  - metadata:
+      name: nfs-mnt
+    spec:
+      accessModes: [ "ReadWriteMany" ]
+      storageClassName: "efs"
+      resources:
+        requests:
+          storage: 10Gi
