@@ -10,31 +10,47 @@ kind: ClusterRole
 metadata:
   name: scale-clusterrole
 rules:
-# - apiGroups:
-#   - ""
-#   resources:
-#   - pods
-#   verbs:
-#   - get
-#   - list
-#   - watch
-#   - create
-#   - update
-#   - patch
-#   - delete
 - apiGroups:
   - "apps"
   resources:
   - deployments
   - deployments/scale
   verbs:
-  # - get
-  # - list
-  # - watch
-  # - create
-  # - update
+  - list
   - patch
-  # - delete
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  verbs:
+  - get
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: scale-clusterrolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: scale-clusterrole
+subjects:
+  - kind: ServiceAccount
+    name: scale-sa
+    namespace: "dev"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: "dev"
+  name: scale-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: scale-role
+subjects:
+  - kind: ServiceAccount
+    name: scale-sa
 
 ---
 # apiVersion: rbac.authorization.k8s.io/v1
@@ -69,29 +85,3 @@ rules:
   # - patch
   # - delete
 
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: scale-clusterrolebinding
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: scale-clusterrole
-subjects:
-  - kind: ServiceAccount
-    name: scale-sa
-    namespace: "dev"
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  namespace: "dev"
-  name: scale-rolebinding
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: scale-role
-subjects:
-  - kind: ServiceAccount
-    name: scale-sa

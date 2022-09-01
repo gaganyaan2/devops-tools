@@ -1,0 +1,54 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: scale-down-weekends-job
+spec:
+  schedule: "0 0 * * 6" #At 00:00 on Saturday
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: scale-sa
+          containers:
+          - name: scale-down-weekend-job
+            image: koolwithk/kubectl
+            imagePullPolicy: IfNotPresent
+            command:
+            - /bin/bash
+            - -c
+            - |
+              namespaces=$(kubectl get ns | awk '{print $1}' | sed 1d)
+              for namespace in $namespaces
+              do
+                kubectl scale --replicas=0 deployment -l weekend-costsaving=true -n $namespace
+              done
+              # OR write your custom kubectl command
+          restartPolicy: OnFailure
+
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: scale-up-weekdays-job
+spec:
+  schedule: "0 0 * * 1" #At 00:00 on Monday.
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: scale-sa
+          containers:
+          - name: scale-up-weekdays-job
+            image: koolwithk/kubectl
+            imagePullPolicy: IfNotPresent
+            command:
+            - /bin/bash
+            - -c
+            - |
+              namespaces=$(kubectl get ns | awk '{print $1}' | sed 1d)
+              for namespace in $namespaces
+              do
+                kubectl scale --replicas=0 deployment -l weekend-costsaving=true -n $namespace
+              done
+              # OR write your custom kubectl command
+          restartPolicy: OnFailure          
