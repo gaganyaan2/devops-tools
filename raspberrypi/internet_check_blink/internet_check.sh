@@ -5,13 +5,16 @@
 
 while(true)
 do
-    ping 8.8.8.8 -c 1 -W 2 || false
+    ping 8.8.8.8 -c 1 -W 1 || false
+    check1=$(echo $?)
+    ping 8.8.8.8 -c 1 -W 1 || false
+    check2=$(echo $?)
 
-    if [ "$?" != "0" ]
+    if [ "$check1" = "1" ] || [ "$check2" = "1" ]
     then
-        python3 internet_check_blink.py on
+        python3 /opt/internet_check_blink.py on
     else
-        python3 internet_check_blink.py off
+        python3 /opt/internet_check_blink.py off
     fi
-sleep 3
+sleep 2
 done
