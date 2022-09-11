@@ -7,6 +7,7 @@ while(true)
 do
     ping 8.8.8.8 -c 1 -W 1 || false
     check1=$(echo $?)
+    sleep 1
     ping 8.8.8.8 -c 1 -W 1 || false
     check2=$(echo $?)
 
@@ -16,5 +17,5 @@ do
     else
         python3 /opt/internet_check_blink.py off
     fi
-sleep 2
+sleep 1
 done
