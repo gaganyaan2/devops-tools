@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: web
+spec:
+  serviceName: "nginx-sts1"
+  replicas: 5
+  selector:
+    matchLabels:
+      app: nginx-sts1
+  template:
+    metadata:
+      labels:
+        app: nginx-sts1
+    spec:
+      containers:
+      - name: nginx-sts1
+        image: nginx
+      tolerations:
+      - effect: NoSchedule
+        key: node
+        operator: Equal
+        value: worker-arm64
+      nodeSelector:
+        role: worker-arm64
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - nginx-sts1
+            topologyKey: kubernetes.io/hostname
