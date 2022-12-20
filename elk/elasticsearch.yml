@@ -32,12 +32,13 @@ spec:
               - key: "kubernetes.io/hostname"
                 operator: "In"
                 values:
+                - lp-arm-1.home
                 - lp-arm-2.home
-                - lp-arm-3.home
                 - lp-arm-4.home
       tolerations:
-      - key: "key"
-        operator: "Exists"
+      - key: "node"
+        value: "arm64"
+        operator: "Equal"
         effect: "NoSchedule" 
       containers:
       - name: elasticsearch
