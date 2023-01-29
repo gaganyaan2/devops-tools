@@ -27,6 +27,7 @@ DevOps Tools list
 - distroless
 - gvisor
 - kata containers
+- skopeo - https://github.com/containers/skopeo
 
 ### IAC
 - Terraform
