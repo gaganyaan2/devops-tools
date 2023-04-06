@@ -2,7 +2,7 @@ name: docker-multi-arch-push
 on:
   push:
     branches:
-      - 'main'
+      - 'not-found'
 jobs:
   docker-build-push:
     runs-on: ubuntu-20.04
