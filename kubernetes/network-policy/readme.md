@@ -61,14 +61,14 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      role: db-pod
+      app: db-pod       # should match with spec.selector.matchLabels
   policyTypes:
     - Ingress
   ingress:
     - from:
         - podSelector:
             matchLabels:
-              role: api-pod
+              app: api-pod
       ports:
         - protocol: TCP
           port: 3306
