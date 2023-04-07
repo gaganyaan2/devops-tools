@@ -44,6 +44,8 @@ spec:
 
 ```
 
+#### get capabilities info
 ```bash
-getcaps /usr/bin/ping
+[root@lp-k8control-1 ~]# getcap  /usr/bin/ping
+/usr/bin/ping = cap_net_admin,cap_net_raw+p
 ```
