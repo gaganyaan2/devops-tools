@@ -41,6 +41,7 @@ spec:
           allowPrivilegeEscalation: false
           capabilities:
               add: ["NET_ADMIN", "SYS_TIME"]
+              drop: ["CHOWN"]
 
 ```
 
